@@ -5,9 +5,11 @@ import json
 from flask import Response
 
 
-@app.route('/')
-def home():
-    page = requests.get('https://web.archive.org/web/20121007172955/https://www.nga.gov/collection/anZ1.htm')
+@app.route('/news/<parameter>')
+def news(parameter):
+    url = "https://www.who.int/news-room/detail/search-results?indexCatalogue=genericsearchindex1&searchQuery=" + parameter + "e&wordsMode=AllWords"
+    return url
+    page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
 
     artist_name_list = soup.find(class_='BodyText')
