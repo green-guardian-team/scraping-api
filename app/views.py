@@ -11,10 +11,16 @@ from services import newsFromWHO
 def news():
     try:
         parameter =  request.args.get('parameter', 'covid')
-
+        
         resultWHO = newsFromWHO.searchNews(parameter)
 
-        return response.response(resultWHO)
+        list = {"news": []}
+
+        for i in range(0, len(resultWHO)):
+            list["news"].append(resultWHO[i])
+
+
+        return response.response(list)
         
 
     except Exception as e:
