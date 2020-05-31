@@ -1,19 +1,44 @@
-from app import app
-import requests
 from bs4 import BeautifulSoup
 import json
-from flask import Response
+import logging
+from flask import Response, request, Flask, jsonify
+import requests
+from app import app
+from utils import response, dateFormatter
 
+@app.route('/api/news/', methods=['GET'])
+def news():
+    try:
+        parameter =  request.args.get('parameter', 'covid')
 
-@app.route('/')
-def home():
-    page = requests.get('https://web.archive.org/web/20121007172955/https://www.nga.gov/collection/anZ1.htm')
-    soup = BeautifulSoup(page.text, 'html.parser')
-
-    artist_name_list = soup.find(class_='BodyText')
-    artist_name_list_items = artist_name_list.find_all('a')
-    list = []
-    for artist_name in artist_name_list_items:
-        list.append(artist_name.prettify())
+        urlWho = "https://www.who.int/news-room/detail/search-results?indexCatalogue=genericsearchindex1&searchQuery=" + parameter + "&wordsMode=AllWords"
         
-    return json.dumps(list)
+        page = requests.get(urlWho)
+        
+        soup = BeautifulSoup(page.text, 'html.parser')
+        
+        headNewsWho = soup.find_all(class_='heading')
+
+        dateNewsWho = soup.find_all(class_='date')
+
+        textNewsWho = soup.find_all(class_='text-underline')
+
+        linksWho = soup.find_all(class_='link-container')
+
+        list = {"news": []}
+        
+        for i in range(0, len(headNewsWho)):
+            list["news"].append(
+                {
+                'title': headNewsWho[i].text,
+                'text': textNewsWho[i].text,
+                'link': linksWho[i].get('href'),
+                'date': dateFormatter.formatDateWHO(dateNewsWho[i])
+                }
+            )
+
+        return response.response(list)
+        
+
+    except Exception as e:
+        return str(e)
