@@ -5,7 +5,7 @@ from flask import Response, request, Flask, jsonify
 import requests
 from app import app
 from utils import response, dateFormatter
-from services import newsFromWHO, newsFromGlobo
+from services import newsFromWHO, newsFromGlobo, NewFromGOV
 
 @app.route('/api/news/', methods=['GET'])
 def news():
@@ -14,6 +14,7 @@ def news():
         
         resultWHO = newsFromWHO.searchNews(parameter)
         resultGlobo = newsFromGlobo.searchNews(parameter)
+        resultGOV = NewFromGOV.searchNews(parameter)
 
         list = {"news": []}
 
@@ -22,6 +23,11 @@ def news():
 
         for i in range(0, len(resultGlobo)):
             list["news"].append(resultGlobo[i])
+
+        for i in range(0, len(resultGOV)):
+            list["news"].append(resultGOV[i])
+
+
 
         return response.response(list)
         
