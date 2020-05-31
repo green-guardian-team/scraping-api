@@ -6,30 +6,29 @@ from flask import Response, request, Flask, jsonify
 import requests
 from app import app
 from utils import response, dateFormatter
-from services import newsFromWHO
-from services import newsFromblog
+from services import newsFromWHO, newsFromGlobo, newsFromBLOG
 
 @app.route('/api/news/', methods=['GET'])
 def news():
     try:
         parameter =  request.args.get('parameter', 'covid')
-
+        
         resultWHO = newsFromWHO.searchNews(parameter)
+        resultGlobo = newsFromGlobo.searchNews(parameter)
+        resultBlog = newsFromBLOG.searchNews(parameter)
 
-        return response.response(resultWHO)
-        
+        list = {"news": []}
 
-    except Exception as e:
-        return str(e)
-        
+        for i in range(0, len(resultWHO)):
+            list["news"].append(resultWHO[i])
 
-def newsnew():
-    try:
-        parameterblog =  request.args.get('parameter', 'covid')
+        for i in range(0, len(resultGlobo)):
+            list["news"].append(resultGlobo[i])
 
-        resultblog = newsFromblog.searchNews(parameterblog)
+        for i in range(0, len(resultBlog)):
+            list["news"].append(resultBlog[i])
 
-        return response.response(resultblog)
+        return response.response(list)
         
 
     except Exception as e:

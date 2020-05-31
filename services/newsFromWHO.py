@@ -19,10 +19,10 @@ def searchNews(parameter):
 
     linksWho = soup.find_all(class_='link-container')
 
-    list = {"news": []}
+    list = []
     
     for i in range(0, len(headNewsWho)):
-        list["news"].append(
+        list.append(
             {
             'title': headNewsWho[i].text,
             'text': textNewsWho[i].text,

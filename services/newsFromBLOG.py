@@ -7,11 +7,15 @@ from utils import response, dateFormatter
 
 
 def searchNews(parameter):
-    urlWho = "https://brazilian.report/?s=" + parameter + "&wordsMode=AllWords"
-    page = requests.get(urlWho)
+    urlBrazilianReport = "https://brazilian.report/?s="+parameter
+    page = requests.get(urlBrazilianReport)
     soup = BeautifulSoup(page.text, 'html.parser')
     
-    headNewsblog = soup.find_all(class_='heading')
+    headNewsBlog = soup.find_all(class_='alm-reveal')
+
+    tags = soup.find_all(class_='title mb-3')
+
+    return str(tags)
 
     dateNewsblog = soup.find_all(class_='ml-5')
 
@@ -19,17 +23,17 @@ def searchNews(parameter):
 
     linksblog = soup.find_all(class_='title mb-4')
 
-    list = {"news": []}
+    list = []
     
-    for i in range(0, len(headNewsWho)):
-        list["news"].append(
+    for i in range(0, len(headNewsBlog)):
+        list.append(
             {
-            'title': headNewsblog[i].text,
+            'title': headNewsBlog[i].text,
             'text': textNewsblog[i].text,
             'link': str(linksblog[i].parent.get('href')),
-            'date': dateFormatter.formatDateblog(dateNewsblog[i]),
+            'date': dateNewsblog[i].text,
             'language': 'eng',
-            'font': 'who'
+            'font': 'brazilian report'
             }
         )
     return list
